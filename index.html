@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>WebXR AR 互动</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!--
+    使用 Import Map 将裸模块标识符映射到 CDN URL。
+    Three.js r164 通过 jsDelivr CDN 引入，支持 ES Modules。
+  -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.164.1/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.164.1/examples/jsm/"
+    }
+  }
+  </script>
+</head>
+<body>
+
+  <!--
+    DOM Overlay 根元素。
+    WebXR dom-overlay 特性要求指定一个根 DOM 元素，
+    它将被叠加显示在 AR 相机画面之上。
+    pointer-events 默认为 none（在 style.css 中设置），
+    具体交互元素再单独开启 auto。
+  -->
+  <div id="overlay">
+
+    <!-- 顶部状态栏：提示当前 AR 状态 -->
+    <div id="status-bar">
+      <span id="status-text">请点击「进入 AR」开始体验</span>
+    </div>
+
+    <!-- 左下角虚拟摇杆 -->
+    <div id="joystick-container">
+      <div id="joystick-base">
+        <div id="joystick-thumb"></div>
+      </div>
+    </div>
+
+    <!-- 右下角动作按钮 -->
+    <div id="action-container">
+      <button id="action-btn" type="button">
+        <span class="btn-label">播放动作</span>
+        <span class="btn-sub">Action</span>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Three.js 主应用脚本，type="module" 支持 ES 模块和 Import Map -->
+  <script type="module" src="app.js"></script>
+</body>
+</html>
