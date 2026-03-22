@@ -1,0 +1,225 @@
+/* ============================================================
+   全局重置与基础样式
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #000;
+
+  /* 禁止长按选中文字 */
+  user-select: none;
+  -webkit-user-select: none;
+
+  /* 禁止触摸默认行为（防止缩放、滚动等），
+     具体交互元素将单独设置 touch-action: none */
+  touch-action: none;
+
+  /* 禁止 iOS 长按高亮 */
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* WebGL 渲染画布（由 Three.js 动态插入 body） */
+canvas {
+  display: block;
+  width: 100% !important;
+  height: 100% !important;
+}
+
+/* ============================================================
+   DOM Overlay 容器
+   ============================================================ */
+#overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* 默认不拦截触摸穿透，让三维空间的射线检测可以正常工作 */
+  pointer-events: none;
+  z-index: 100;
+}
+
+/* ============================================================
+   顶部状态栏
+   ============================================================ */
+#status-bar {
+  position: absolute;
+  top: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 80vw;
+
+  background: rgba(0, 0, 0, 0.55);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 24px;
+
+  padding: 10px 22px;
+  color: #fff;
+  font-size: 14px;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    "Hiragino Sans GB", sans-serif;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  /* 状态栏只展示信息，不拦截触摸 */
+  pointer-events: none;
+}
+
+/* ============================================================
+   左下角虚拟摇杆容器
+   ============================================================ */
+#joystick-container {
+  position: absolute;
+  bottom: 40px;
+  left: 40px;
+
+  /* 摇杆必须拦截触摸，防止事件穿透到下层 WebGL 画布 */
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+/* 摇杆底座（外圆） */
+#joystick-base {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.15);
+  border: 2px solid rgba(255, 255, 255, 0.4);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.35);
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+/* 摇杆拇指（内圆） */
+#joystick-thumb {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.85);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+
+  position: absolute;
+  /* 初始居中 */
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+
+  /* 手指按下时无过渡，实时跟随；松开时有短暂回弹 */
+  transition: background 0.15s ease, box-shadow 0.15s ease;
+
+  /* 内圆本身不拦截触摸事件 */
+  pointer-events: none;
+}
+
+/* 摇杆激活状态 */
+#joystick-base.active {
+  background: rgba(255, 255, 255, 0.28);
+  border-color: rgba(255, 255, 255, 0.75);
+}
+
+#joystick-base.active #joystick-thumb {
+  background: rgba(80, 190, 255, 0.95);
+  box-shadow: 0 2px 16px rgba(80, 190, 255, 0.7);
+}
+
+/* ============================================================
+   右下角动作按钮
+   ============================================================ */
+#action-container {
+  position: absolute;
+  bottom: 40px;
+  right: 40px;
+
+  /* 按钮必须拦截触摸 */
+  pointer-events: auto;
+  touch-action: none;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+#action-btn {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+
+  background: linear-gradient(
+    135deg,
+    rgba(80, 190, 255, 0.85),
+    rgba(160, 100, 255, 0.85)
+  );
+  border: 2px solid rgba(255, 255, 255, 0.5);
+  outline: none;
+  -webkit-appearance: none;
+
+  color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC",
+    sans-serif;
+  cursor: pointer;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  box-shadow: 0 4px 20px rgba(80, 190, 255, 0.45);
+
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.btn-label {
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: 0.5px;
+}
+
+.btn-sub {
+  font-size: 10px;
+  opacity: 0.8;
+  line-height: 1;
+}
+
+#action-btn:active,
+#action-btn.pressed {
+  transform: scale(0.88);
+  box-shadow: 0 2px 10px rgba(80, 190, 255, 0.3);
+}
+
+/* ============================================================
+   ARButton 样式微调
+   Three.js ARButton 会在 body 上创建一个 <button id="ARButton">，
+   这里微调其位置使其居中且与 overlay UI 不重叠。
+   ============================================================ */
+#ARButton {
+  position: fixed !important;
+  bottom: 24px !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  right: auto !important;
+}
